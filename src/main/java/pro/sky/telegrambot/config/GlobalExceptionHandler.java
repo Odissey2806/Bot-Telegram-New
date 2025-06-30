@@ -1,6 +1,5 @@
 package pro.sky.telegrambot.config;
 
-
 import liquibase.exception.DatabaseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,12 +11,10 @@ import pro.sky.telegrambot.exception.*;
 public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-
     @ExceptionHandler(ReminderParseException.class)
     public void handleParseException(ReminderParseException e) {
-        log.warn("Ошибка парсинга: {}", e.getInvalidInput());
+        log.warn("Ошибка парсинга: {}. Входные данные: {}", e.getMessage(), e.getInvalidInput());
     }
-
 
     @ExceptionHandler(TelegramApiException.class)
     public void handleTelegramApiException(TelegramApiException e) {
@@ -26,12 +23,10 @@ public class GlobalExceptionHandler {
                 e.getMessage());
     }
 
-
     @ExceptionHandler(DatabaseException.class)
     public void handleDatabaseException(DatabaseException e) {
         log.error("Ошибка базы данных", e);
     }
-
 
     @ExceptionHandler(Exception.class)
     public void handleUnexpectedException(Exception e) {

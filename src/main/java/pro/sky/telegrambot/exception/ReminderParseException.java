@@ -1,17 +1,12 @@
 package pro.sky.telegrambot.exception;
 
-import java.time.format.DateTimeParseException;
-
-public class ReminderParseException extends TelegramBotException {
+public class ReminderParseException extends RuntimeException {
     private final String invalidInput;
 
-
-    public ReminderParseException(String invalidInput, DateTimeParseException cause) {
-        super("Некорректный формат даты: " + invalidInput +
-                ". Требуемый формат: ДД.ММ.ГГГГ ЧЧ:MM", cause);
+    public ReminderParseException(String message, String invalidInput) {
+        super(message);
         this.invalidInput = invalidInput;
     }
-
 
     public String getInvalidInput() {
         return invalidInput;

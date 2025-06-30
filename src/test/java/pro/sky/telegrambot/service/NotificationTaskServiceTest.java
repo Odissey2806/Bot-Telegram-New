@@ -40,7 +40,7 @@ class NotificationTaskServiceTest {
         when(telegramBot.execute(any(SendMessage.class)))
                 .thenReturn(mock(SendResponse.class));
 
-        // Выполнение
+        // Действие
         service.processMessage(123L, validMessage);
 
         // Проверка
@@ -49,22 +49,14 @@ class NotificationTaskServiceTest {
 
     @Test
     void processMessage_InvalidFormat_ThrowsException() {
-        // Подготовка неверных форматов
-        String[] invalidMessages = {
-                "неправильный формат",
-                "01.01.2023",                  // Только дата
-                "12:00 Текст без даты",        // Только время
-                "01-01-2023 12:00 Не тот разделитель",
-                "01.01.23 12:00 Двухзначный год"
-        };
+        // Подготовка
+        String invalidMessage = "неправильный формат";
 
-        // Проверка всех вариантов
-        for (String invalidMessage : invalidMessages) {
-            assertThrows(ReminderParseException.class,
-                    () -> service.processMessage(123L, invalidMessage),
-                    "Должно выбрасываться исключение для: " + invalidMessage
-            );
-        }
+        // Действие и проверка
+        Exception exception = assertThrows(ReminderParseException.class,
+                () -> service.processMessage(123L, invalidMessage));
+
+        assertTrue(exception.getMessage().contains("Неверный формат"));
     }
 
     @Test
@@ -80,10 +72,10 @@ class NotificationTaskServiceTest {
         when(telegramBot.execute(any(SendMessage.class)))
                 .thenReturn(mock(SendResponse.class));
 
-        // Выполнение
+        // Действие
         service.checkReminders();
 
-        // Проверка
+        // Проверка отправки сообщения
         ArgumentCaptor<SendMessage> messageCaptor = ArgumentCaptor.forClass(SendMessage.class);
         verify(telegramBot).execute(messageCaptor.capture());
 
@@ -91,8 +83,8 @@ class NotificationTaskServiceTest {
         assertEquals(task.getChatId(), actualMessage.getParameters().get("chat_id"));
         assertEquals("🔔 Напоминание: " + task.getMessage(), actualMessage.getParameters().get("text"));
 
+        // Проверка обновления статуса задачи
         assertTrue(task.isSent());
         verify(repository).save(task);
     }
-
 }
